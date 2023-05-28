@@ -1,0 +1,61 @@
+#install the required libraries and dependencies 
+!pip install git+https://github.com/spotify/basic-pitch
+!pip install basic-pitch --upgrade
+!pip install essentia 
+!pip install --upgrade essentia
+!pip install librosa soundfile
+!pip install midiutil
+
+#import all the libraries 
+import essentia.standard as ess
+import essentia.streaming
+import pretty_midi
+import numpy as np
+from basic_pitch.inference import predict
+from basic_pitch import ICASSP_2022_MODEL_PATH
+import librosa
+import soundfile as sf
+import IPython.display as ipd
+
+#The following code is for Google colab notebooks 
+#allow the notebook access to your drive space to store outputs of the notebook 
+from google.colab import drive
+drive.mount('/content/drive')
+
+dataset_file = '....' #input_directory 
+output_file = '...' #output directory 
+
+#load the wav file 
+
+#loading with librosa 
+audio_file = dataset_file
+audio, sr = librosa.load(audio_file)
+
+#loading with essentia 
+loader = ess.MonoLoader(filename= dataset_file)
+audio = loader()
+
+#Using Spotify's basic-pitch library to extract information from the wav file 
+model_output, midi_data, note_events = predict(dataset_file)
+#analyse the music inferences 
+
+#save the inferences in drive 
+
+from basic_pitch.inference import predict_and_save
+
+audio_list = ["/content/drive/MyDrive/music-Phoebe-Bridgers.wav"]
+
+predict_and_save(audio_path_list = audio_list, 
+                 output_directory= '/content/drive/MyDrive', 
+                 save_midi = True, #midi file 
+                 sonify_midi = True, #synthesized audible midi file (converted to wav)
+                 save_model_outputs = True, #.npz file with digital embedding 
+                 save_notes = True,
+                 model_path = ICASSP_2022_MODEL_PATH, #this is a pre-trained model developed by Spotify's Audio Intelligence Lab 
+                 onset_threshold=0.5,
+                 frame_threshold=0.3,
+                 minimum_note_length=58,
+                 sonification_samplerate=44100,
+                 midi_tempo=120) 
+                 
+                 
